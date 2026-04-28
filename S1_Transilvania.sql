@@ -1,8 +1,3 @@
--- ==========================================
--- SCRIPT PENTRU SERVERUL S1 (TRANSILVANIA)
--- ==========================================
-
--- 1. Tabele Replicate (PLAN si CLIENT)
 CREATE TABLE plan (
     denumire_plan VARCHAR2(50) PRIMARY KEY,
     pret NUMBER(6,2) CHECK (pret > 0)
@@ -16,14 +11,12 @@ CREATE TABLE client (
     telefon VARCHAR2(20)
 );
 
--- 2. Fragmente Orizontale Primare (FOP)
 CREATE TABLE oras_1 (
     id_oras NUMBER PRIMARY KEY,
     nume_oras VARCHAR2(100) NOT NULL,
     regiune VARCHAR2(50) CHECK (regiune IN ('Transilvania', 'Muntenia', 'Moldova'))
 );
 
--- 3. Fragmente Orizontale Derivate (FOD)
 CREATE TABLE adresa_1 (
     id_adresa NUMBER PRIMARY KEY,
     id_oras NUMBER NOT NULL,
@@ -53,7 +46,6 @@ CREATE TABLE departament_1 (
     CONSTRAINT ck_salariu_max_min CHECK (salariu_maxim > salariu_minim)
 );
 
--- 4. Fragmente Verticale (FV) + Derivate (FOD) pe tabela Angajat
 CREATE TABLE angajat_v1_1 (
     id_angajat NUMBER PRIMARY KEY,
     nume VARCHAR2(50) NOT NULL,
@@ -71,18 +63,16 @@ CREATE TABLE angajat_v2_1 (
     CONSTRAINT fk_ang_dep FOREIGN KEY (id_departament) REFERENCES departament_1(id_departament)
 );
 
--- 5. Restul Fragmentelor Derivate
 CREATE TABLE aparat_1 (
     id_aparat NUMBER PRIMARY KEY,
     marca VARCHAR2(50),
     denumire VARCHAR2(100) NOT NULL,
-    data_productie DATE, -- Eliminat CHECK SYSDATE pt eroarea ORA-02436
+    data_productie DATE, 
     grupa_musculara VARCHAR2(50),
     id_sala NUMBER NOT NULL,
     CONSTRAINT fk_aparat_sala FOREIGN KEY (id_sala) REFERENCES sala_1(id_sala)
 );
 
--- Trigger pentru validarea datei de productie (inlocuieste CHECK-ul)
 CREATE OR REPLACE TRIGGER trg_check_data_prod_1
 BEFORE INSERT OR UPDATE ON aparat_1
 FOR EACH ROW
